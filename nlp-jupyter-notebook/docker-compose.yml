@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  dsnlp:
+    image: vp7799/nlp-jupyter-notebook
+    container_name: nlp-container
+    environment:
+        - JUPYTER_ENABLE_LAB=yes
+
+    volumes:
+        - ./work:/home/jovyan/work
+    ports:
+      - "8888:8888"
