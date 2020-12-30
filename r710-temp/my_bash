@@ -1,0 +1,28 @@
+#!/bin/sh
+MAXTEMP=27
+TEMP=$(ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW sdr type temperature |grep Ambient |grep degrees |grep -Po '\d{2}' | tail -1)
+echo "current temp is $TEMP"
+#
+if [[ $TEMP -ge $MAXTEMP ]];
+  then
+    echo "Max Temp"
+    ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW  raw 0x30 0x30 0x01 0x01
+
+elif [[ $TEMP -ge 25 ]];
+  then
+		echo "Hotter than 25"
+    ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x00
+		ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x02 0xff 0x10
+
+elif [[ $TEMP -ge 22 ]];
+  then
+    echo "Hotter than 22"
+    ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x00
+    ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x02 0xff 0x0a
+
+else
+  echo "Nice and Chilly"
+  ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x01 0x00
+  ipmitool -I lanplus -H $IPMIHOST -U $IPMIUSER -P $IPMIPW raw 0x30 0x30 0x02 0xff 0x09
+
+fi
